@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Soduku</h1>
+
+    <!-- TODO: For Input data to computer -->
+    <div class="input">
+        <h3>Let Play :</h3>
+        <table>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr><td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+            <tr>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+                <td><input type = "text"></td>
+            </tr>
+        </table>
+    </div>
+
+    <button id="submit">Random</button>
+
+    <!-- TODO: For Output data from computer -->
+    <!-- <div class="output">
+        <h3>output : </h3>
+        <table>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr><td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+            <tr>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+                <td><p></p></td>
+            </tr>
+        </table> -->
+    </div>
+</body>
+<script 
+</html>

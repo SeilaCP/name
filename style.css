@@ -1,0 +1,46 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* .input table{
+    border-spacing: 0px;
+}
+
+.input table tr td{
+    padding: 0px;
+} */
+
+.input table tr input{
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    border: solid 1px black;
+}
+
+#submit{
+    width: 300px;
+    height: 30px;
+    background-color: black;
+    color: white;
+    margin-top: 25px;
+    border-radius: 4px;
+}
+
+#submit:hover{
+    background-color: white;
+    color: black;
+}
+
+/* .output{
+    margin-top: 10px;
+}
+.output table tr p{
+    margin: 0px;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    border: solid 2px black;
+} */
