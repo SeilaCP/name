@@ -13,7 +13,7 @@ body {
     padding: 0px;
 } */
 
-.input table tr input{
+.input table tr td{
     text-align: center;
     width: 25px;
     height: 25px;
