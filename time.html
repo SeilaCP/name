@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+    <title>Sudoku</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .input {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 2px;
+            margin: 20px 0;
+        }
+        .input input {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 18px;
+            text-align: center;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .input input:focus {
+            border-color: #6a90f2;
+            background-color: #e6f0ff;
+            outline: none;
+        }
+        .input input.valid {
+            border-color: #4CAF50; /* Green */
+        }
+        .input input.invalid {
+            border-color: #f44336; /* Red */
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        select {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .timer {
+            margin: 10px;
+            font-size: 18px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sudoku</h1>
+    <div class="timer" id="timer">Time: 0:00</div>
+    <div class="input" id="sudoku-grid">
+        ${Array.from({length: 9}).map((_, row) => `
+            ${Array.from({length: 9}).map((_, col) => `
+                <input type="text" maxlength="1" id="cell-${row}-${col}" oninput="validateCell(this, ${row}, ${col})">
+            `).join('')}
+        `).join('')}
+    </div>
+    <div class="controls">
+        <select id="difficulty" onchange="updateDifficulty()">
+            <option value="30">Easy</option>
+            <option value="40" selected>Medium</option>
+            <option value="50">Hard</option>
+            <option value="60">Custom</option>
+        </select>
+        <input type="number" id="custom-difficulty" placeholder="Enter clues (1-81)" min="1" max="81" style="display: none;">
+    </div>
+    <div class="controls">
+        <button id="generate" onclick="generatePuzzle()">Generate Puzzle</button>
+        <button id="submit" onclick="showAnswer()">Show Answer</button>
+        <button id="clear" onclick="clearBoard()">Clear Board</button>
+        <button id="reset" onclick="resetPuzzle()">Reset Puzzle</button>
+    </div>
+
+    <script>
+        const GRID_SIZE = 9;
+        const SUBGRID_SIZE = 3;
+        let solvedGrid = [];
+        let currentDifficulty = 40;
+        let timerInterval;
+        let seconds = 0;
+
+        // Start the timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                seconds++;
+                const minutes = Math.floor(seconds / 60);
+                const displaySeconds = seconds % 60;
+                document.getElementById("timer").innerText = `Time: ${minutes}:${String(displaySeconds).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Stop the timer
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Validate cell input
+        function validateCell(input, row, col) {
+            const value = input.value;
+            if (value.match(/^[1-9]$/)) {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+                checkForCompletion();
+            } else {
+                input.classList.remove('valid');
+                input.classList.add('invalid');
+            }
+        }
+
+        // Check if the game is completed
+        function checkForCompletion() {
+            const cells = document.querySelectorAll('.input input');
+            const filledCells = Array.from(cells).every(cell => cell.value !== '');
+            if (filledCells) {
+                stopTimer();
+                alert('Congratulations! You completed the puzzle.');
+            }
+        }
+
+        // Get the selected difficulty level
+        function getSelectedDifficulty() {
+            const difficultySelect = document.getElementById("difficulty");
+            return parseInt(difficultySelect.value);
+        }
+
+        // Update difficulty when changed
+        function updateDifficulty() {
+            const customInput = document.getElementById("custom-difficulty");
+            if (document.getElementById("difficulty").value === "60") {
+                customInput.style.display = "inline-block";
+            } else {
+                customInput.style.display = "none";
+            }
+            currentDifficulty = getSelectedDifficulty();
+        }
+
+        // Generate a new Sudoku puzzle
+        function generatePuzzle() {
+            const grid = generateSudoku(currentDifficulty);
+            populateGrid(grid);
+            startTimer();
+        }
+
+        // Function to create a valid Sudoku grid
+        function generateSudoku(difficulty) {
+            let grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
+            fillGrid(grid);
+            removeNumbers(grid, difficulty);
+            return grid;
+        }
+
+        function fillGrid(grid) {
+            for (let row = 0; row < GRID_SIZE; row++) {
+                for (let col = 0; col < GRID_SIZE; col++) {
+                    if (grid[row][col] === 0) {
+                        const nums = Array.from({ length: GRID_SIZE }, (_, i) => i + 1);
+                        shuffleArray(nums);
+                        for (let num of nums) {
+                            if (isValid(grid, row, col, num)) {
+                                grid[row][col] = num;
+                                if (fillGrid(grid)) {
+                                    return true;
+                                }
+                                grid[row][col] = 0;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function isValid(grid, row, col, num) {
+            for (let x = 0; x < GRID_SIZE; x++) {
+                if (grid[row][x] === num || grid[x][col] === num ||
+                    grid[Math.floor(row / SUBGRID_SIZE) * SUBGRID_SIZE + Math.floor(x / SUBGRID_SIZE)]
+                    [Math.floor(col / SUBGRID_SIZE) * SUBGRID_SIZE + x % SUBGRID_SIZE] === num) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function removeNumbers(grid, difficultyLevel) {
+            const cellsToRemove = difficultyLevel;
+            let attempts = cellsToRemove;
+            while (attempts > 0) {
+                const row = Math.floor(Math.random() * GRID_SIZE);
+                const col = Math.floor(Math.random() * GRID_SIZE);
+                if (grid[row][col] !== 0) {
+                    const originalValue = grid[row][col];
+                    grid[row][col] = 0;
+
+                    const copyGrid = grid.map(r => r.slice());
+                    if (!hasUniqueSolution(copyGrid)) {
+                        grid[row][col] = originalValue;
+                    } else {
+                        attempts--;
+                    }
+                }
+            }
+        }
+
+        function hasUniqueSolution(grid) {
+            let count = 0;
+
+            function countSolutions(grid) {
+                for (let row = 0; row < GRID_SIZE; row++) {
+                    for (let col = 0; col < GRID_SIZE; col++) {
+                        if (grid[row][col] === 0) {
+                            for (let num = 1; num <= GRID_SIZE; num++) {
+                                if (isValid(grid, row, col, num)) {
+                                    grid[row][col] = num;
+                                    countSolutions(grid);
+                                    grid[row][col] = 0; // Backtrack
+                                }
+                            }
+                            return;
+                        }
+                    }
+                }
+                count++;
+            }
+
+            countSolutions(grid);
+            return count === 1; // Ensure only one solution
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function populateGrid(grid) {
+            const cells = document.querySelectorAll('.input input');
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / GRID_SIZE);
+                const col = index % GRID_SIZE;
+                cell.value = grid[row][col] !== 0 ? grid[row][col] : ''; // Fill in numbers
+                cell.disabled = grid[row][col] !== 0; // Disable input for filled cells
+            });
+            solvedGrid = grid.map(r => r.slice()); // Keep a solved copy
+        }
+
+        // Show the correct answers
+        function showAnswer() {
+            const cells = document.querySelectorAll('.input input');
+            cells.forEach((cell, index) => {
+                const row = Math.floor(index / GRID_SIZE);
+                const col = index % GRID_SIZE;
+                cell.value = solvedGrid[row][col]; // Show the correct value
+                cell.disabled = true; // Disable input after showing the answer
+            });
+            stopTimer();
+        }
+
+        // Clear the board for a new game
+        function clearBoard() {
+            const cells = document.querySelectorAll('.input input');
+            cells.forEach(cell => {
+                cell.value = ''; // Clear each input
+                cell.disabled = false; // Re-enable input
+                cell.classList.remove('valid', 'invalid'); // Reset classes
+            });
+            stopTimer();
+            seconds = 0;
+            document.getElementById("timer").innerText = `Time: 0:00`;
+        }
+
+        // Reset the puzzle
+        function resetPuzzle() {
+            clearBoard(); // Clear the board first
+            generatePuzzle(); // Regenerate puzzle with the current difficulty
+        }
+
+        // Event listener for window load
+        window.onload = () => {
+            generatePuzzle(); // Generate an initial puzzle
+        };
+    </script>
+</body>
+</html>

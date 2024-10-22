@@ -6,26 +6,24 @@
     <link rel="stylesheet" href="./style.css">
     <title>Sudoku</title>
     <style>
+        /* Existing styles */
         body {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
         }
-
         .input table tr td {
             text-align: center;
             width: 25px;
             height: 25px;
             border: solid 1px black;
         }
-
         .input table tr td span {
             text-align: center;
             width: 24px;
             height: 24px;
         }
-
         #submit, #clear {
             width: 300px;
             height: 30px;
@@ -34,12 +32,10 @@
             margin-top: 25px;
             border-radius: 4px;
         }
-
         #submit:hover, #clear:hover {
             background-color: white;
             color: black;
         }
-
         .section {
             width: 100%;
             height: fit-content;
@@ -49,11 +45,9 @@
             display: inline-flex;
             justify-content: space-evenly;
         }
-
         .section .name {
             color: white;
         }
-
         .section .name img {
             width: 70px;
             height: 70px;
@@ -67,6 +61,7 @@
     <div class="input">
         <h3>Let’s Play:</h3>
         <table>
+            <!-- Table setup remains unchanged -->
             <tr>
                 <td id="1"></td>
                 <td id="2"></td>
@@ -194,7 +189,6 @@
     <script>
         const GRID_SIZE = 9;
         const SUBGRID_SIZE = 3;
-        const numinput = [];
         let solvedGrid = []; // Store the solved grid
 
         // Helper function to check if placing num at grid[row][col] is valid
@@ -214,7 +208,9 @@
             for (let row = 0; row < GRID_SIZE; row++) {
                 for (let col = 0; col < GRID_SIZE; col++) {
                     if (grid[row][col] === 0) {
-                        for (let num = 1; num <= GRID_SIZE; num++) {
+                        const nums = Array.from({ length: GRID_SIZE }, (_, i) => i + 1);
+                        shuffleArray(nums); // Shuffle numbers to increase randomness
+                        for (let num of nums) {
                             if (isValid(grid, row, col, num)) {
                                 grid[row][col] = num;
                                 if (fillGrid(grid)) {
@@ -239,17 +235,52 @@
 
         // Function to remove numbers from the grid to create a puzzle
         function removeNumbers(grid, difficultyLevel) {
-            let attempts = difficultyLevel;
+            const cellsToRemove = difficultyLevel; // Number of cells to remove based on difficulty
+            let attempts = cellsToRemove;
             while (attempts > 0) {
-                let row = Math.floor(Math.random() * GRID_SIZE);
-                let col = Math.floor(Math.random() * GRID_SIZE);
-                while (grid[row][col] === 0) {
-                    row = Math.floor(Math.random() * GRID_SIZE);
-                    col = Math.floor(Math.random() * GRID_SIZE);
+                const row = Math.floor(Math.random() * GRID_SIZE);
+                const col = Math.floor(Math.random() * GRID_SIZE);
+                // Only remove a cell if it currently has a number
+                if (grid[row][col] !== 0) {
+                    const originalValue = grid[row][col];
+                    grid[row][col] = 0; // Remove the number
+
+                    // Create a copy of the grid to check for uniqueness
+                    const copyGrid = grid.map(r => r.slice());
+                    if (!hasUniqueSolution(copyGrid)) {
+                        grid[row][col] = originalValue; // Restore the number if no unique solution
+                    } else {
+                        attempts--; // Successful removal
+                    }
                 }
-                grid[row][col] = 0; // Remove the number
-                attempts--;
             }
+        }
+
+        // Function to check if the grid has a unique solution
+        function hasUniqueSolution(grid) {
+            let count = 0;
+
+            // Inner recursive function to count solutions
+            function countSolutions(grid) {
+                for (let row = 0; row < GRID_SIZE; row++) {
+                    for (let col = 0; col < GRID_SIZE; col++) {
+                        if (grid[row][col] === 0) {
+                            for (let num = 1; num <= GRID_SIZE; num++) {
+                                if (isValid(grid, row, col, num)) {
+                                    grid[row][col] = num;
+                                    countSolutions(grid);
+                                    grid[row][col] = 0; // Backtrack
+                                }
+                            }
+                            return; // Exit the loop after finding one empty cell
+                        }
+                    }
+                }
+                count++; // Found a valid solution
+            }
+
+            countSolutions(grid);
+            return count === 1; // Return true if there's exactly one solution
         }
 
         // Function to generate a Sudoku puzzle with a specified difficulty
@@ -258,6 +289,14 @@
             solvedGrid = grid.map(row => [...row]); // Store the solved grid
             removeNumbers(grid, difficultyLevel); // Remove numbers based on the difficulty level
             return grid; // Return the puzzle
+        }
+
+        // Shuffle an array in place
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
         }
 
         // Populate the HTML table with the generated puzzle
@@ -301,7 +340,6 @@
             for (let i = 1; i <= 81; i++) {
                 const cell = document.getElementById(i);
                 cell.innerHTML = ""; // Clear cell content
-                numinput[i - 1] = 0; // Reset numinput
             }
         }
     </script>
