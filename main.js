@@ -18,9 +18,34 @@ function createInput(n)
     // parainput.className = n;
     document.getElementById(n).appendChild(parainput);
 }
+
+// TODO: Remove input field inside the parent element when removeChild is called.
+function removeChild(n){
+    const parent = document.getElementById(n);
+    const inputElements = parent.getElementsByTagName('input');
+    
+    // Check if there are any input elements to remove
+    if (inputElements.length > 0) {
+        parent.removeChild(inputElements[inputElements.length - 1]);
+    }
+}
+
+//TODO: Check the condition to remove old rander in out table
+function removeOldRandom(){
+    for (i = 1; i <= 81; i++)
+    {
+        if ( numinput[i - 1] == 0 ){
+            removeChild(i);
+        }else{
+            document.getElementById(i).innerHTML = null;
+        }
+    }
+}
+
 // TODO: communicate with 'random' buttom and do random data in array (numinput)
 function Random()
 {
+    removeOldRandom();
     for (i = 1; i <= 81; i++)
     {
         numinput[i - 1] = GFG_Fun();
