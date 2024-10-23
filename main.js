@@ -1,21 +1,98 @@
+const GRID_SIZE = 9;
+const SUBGRID_SIZE = 3;
 const numinput = [];
-let getnum = [0,0,0,0,0,0,0,0,1,2,3,4,5,6,7,8,9];
 
-// count random index
-function random(mn, mx) {
-    return Math.random() * (mx - mn) + mn;
-}
-// ! make random in array by access index random
-function GFG_Fun() {
-    return getnum[(Math.floor(random(1, 17))) - 1];
+// Helper function to check if placing num at grid[row][col] is valid
+function isValid(grid, row, col, num) {
+    for (let x = 0; x < GRID_SIZE; x++) {
+        if (grid[row][x] === num || grid[x][col] === num || 
+            grid[Math.floor(row / SUBGRID_SIZE) * SUBGRID_SIZE + Math.floor(x / SUBGRID_SIZE)]
+            [Math.floor(col / SUBGRID_SIZE) * SUBGRID_SIZE + x % SUBGRID_SIZE] === num) {
+            return false;
+        }
+    }
+    return true;
 }
 
+// Recursive function to fill the grid using backtracking
+function fillGrid(grid) {
+    for (let row = 0; row < GRID_SIZE; row++) {
+        for (let col = 0; col < GRID_SIZE; col++) {
+            if (grid[row][col] === 0) {
+                for (let num = 1; num <= GRID_SIZE; num++) {
+                    if (isValid(grid, row, col, num)) {
+                        grid[row][col] = num;
+                        if (fillGrid(grid)) {
+                            return true;
+                        }
+                        grid[row][col] = 0; // Reset the cell if it leads to a dead end
+                    }
+                }
+                return false; // If no number is valid, backtrack
+            }
+        }
+    }
+    return true; // Sudoku filled successfully
+}
+
+// Function to create a valid Sudoku grid
+function generateSudoku() {
+    let grid = Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(0));
+    fillGrid(grid);
+    return grid;
+}
+
+// Function to remove numbers from the grid to create a puzzle
+function removeNumbers(grid, difficultyLevel) {
+    let attempts = difficultyLevel;
+    while (attempts > 0) {
+        let row = Math.floor(Math.random() * GRID_SIZE);
+        let col = Math.floor(Math.random() * GRID_SIZE);
+        while (grid[row][col] === 0) {
+            row = Math.floor(Math.random() * GRID_SIZE);
+            col = Math.floor(Math.random() * GRID_SIZE);
+        }
+        grid[row][col] = 0; // Remove the number
+        attempts--;
+    }
+}
+
+// Function to generate a Sudoku puzzle with a specified difficulty
+function generateSudokuPuzzle(difficultyLevel) {
+    let grid = generateSudoku(); // Generate a fully solved Sudoku
+    removeNumbers(grid, difficultyLevel); // Remove numbers based on the difficulty level
+    return grid;
+}
+
+// Populate the table with the generated Sudoku puzzle
+function populateTable(grid) {
+    for (let row = 0; row < GRID_SIZE; row++) {
+        for (let col = 0; col < GRID_SIZE; col++) {
+            const cellId = row * GRID_SIZE + col + 1; // Calculate the cell ID
+            const cellValue = grid[row][col];
+            if (cellValue !== 0) {
+                document.getElementById(cellId).innerHTML = cellValue; // Set the value if not empty
+            } else {
+                createInput(cellId); // Create input if empty
+            }
+        }
+    }
+}
+
+// Generate a new Sudoku puzzle and populate the table
+function generatePuzzle(difficultyLevel) {
+    removeOldRandom();
+    const puzzle = generateSudokuPuzzle(difficultyLevel);
+    populateTable(puzzle);
+    console.log(puzzle);
+}
+// Our Code
 // TODO: we add 'input' element in 'td' to access user can input value in 'null' box 
 function createInput(n)
 {
     const parainput = document.createElement('input');
     parainput.type = 'text';
-    // parainput.className = n;
+    parainput.id = 'input_' + n;
     document.getElementById(n).appendChild(parainput);
 }
 
@@ -43,34 +120,20 @@ function removeOldRandom(){
 }
 
 // TODO: communicate with 'random' buttom and do random data in array (numinput)
-function Random()
-{
-    removeOldRandom();
-    for (i = 1; i <= 81; i++)
-    {
-        numinput[i - 1] = GFG_Fun();
-        if (numinput[i - 1] != 0)
-        {
-            document.getElementById(i).innerHTML = (numinput[i - 1]);
-        }else if(numinput[i - 1] == 0){
-            createInput(i);
-        }
-    }
-    console.log(numinput);
-}
 // TODO: communicate with 'submit' buttom and do random data in array (numinput)
 function myclick()
 {
-    for (i = 1; i <= 81; i++)
-    {
-        var number = 0;
-        number = document.getElementById(i).value;
-        if (number != 0)
-        {
-            numinput[i - 1] = 
-            console.log(number);
+    removeOldRandom();
+    function myclick() {
+        for (let i = 1; i <= 81; i++) {
+            var inputElement = document.getElementById('input_' + i);
+            if (inputElement) {
+                var number = inputElement.value;
+                if (number) {
+                    numinput[i - 1] = parseInt(number); // Store the user input
+                }
+            }
         }
+        console.log(numinput);
     }
-
-    console.log(numinput);
 }
