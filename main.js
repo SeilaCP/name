@@ -1,6 +1,24 @@
 const GRID_SIZE = 9;
 const SUBGRID_SIZE = 3;
 const numinput = [];
+let solvedGrid = []; // Store the solved grid
+let timerInterval;
+let seconds = 0;
+
+// Start the timer
+function startTimer() {
+    timerInterval = setInterval(() => {
+        seconds++;
+        const minutes = Math.floor(seconds / 60);
+        const displaySeconds = seconds % 60;
+        document.getElementById("timer").innerText = `Time: ${minutes}:${String(displaySeconds).padStart(2, '0')}`;
+        }, 1000);
+}
+
+// Stop the timer
+function stopTimer() {
+    clearInterval(timerInterval);
+}
 
 // Helper function to check if placing num at grid[row][col] is valid
 function isValid(grid, row, col, num) {
@@ -60,8 +78,18 @@ function removeNumbers(grid, difficultyLevel) {
 // Function to generate a Sudoku puzzle with a specified difficulty
 function generateSudokuPuzzle(difficultyLevel) {
     let grid = generateSudoku(); // Generate a fully solved Sudoku
+    solvedGrid = grid.map(row => [...row]); // ! Store the solved grid
     removeNumbers(grid, difficultyLevel); // Remove numbers based on the difficulty level
     return grid;
+}
+
+// TODO: we add 'input' element in 'td' to access user can input value in 'null' box 
+function createInput(n)
+{
+    const parainput = document.createElement('input');
+    parainput.type = 'text';
+    parainput.id = 'input_' + n;
+    document.getElementById(n).appendChild(parainput);
 }
 
 // Populate the table with the generated Sudoku puzzle
@@ -79,22 +107,18 @@ function populateTable(grid) {
     }
 }
 
+// TODO: communicate with 'random' buttom and do random data in array (numinput)
 // Generate a new Sudoku puzzle and populate the table
 function generatePuzzle(difficultyLevel) {
+    stopTimer();
+    seconds = 0;
     removeOldRandom();
     const puzzle = generateSudokuPuzzle(difficultyLevel);
     populateTable(puzzle);
+    startTimer();
     console.log(puzzle);
 }
 // Our Code
-// TODO: we add 'input' element in 'td' to access user can input value in 'null' box 
-function createInput(n)
-{
-    const parainput = document.createElement('input');
-    parainput.type = 'text';
-    parainput.id = 'input_' + n;
-    document.getElementById(n).appendChild(parainput);
-}
 
 // TODO: Remove input field inside the parent element when removeChild is called.
 function removeChild(n){
@@ -119,7 +143,6 @@ function removeOldRandom(){
     }
 }
 
-// TODO: communicate with 'random' buttom and do random data in array (numinput)
 // TODO: communicate with 'submit' buttom and do random data in array (numinput)
 function myclick()
 {
